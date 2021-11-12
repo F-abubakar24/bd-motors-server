@@ -32,6 +32,14 @@ async function run() {
         })
 
 
+// get single bike data
+        app.get('/bikes/bikeId', async (req, res) => {
+            const cursor = bikesCollection.findOne({});
+            const result = await cursor.toArray();
+            res.json(result)
+        })
+
+
     } finally {
         // await client.close()
     }
