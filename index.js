@@ -25,6 +25,8 @@ async function run() {
         const bikesCollection = database.collection("bikes");
         const ordersCollection = database.collection("orders");
         const reviewCollection = database.collection("review");
+        const usersCollection = database.collection("users");
+
 // ===================================================================
 
 
@@ -56,6 +58,15 @@ async function run() {
 
 
 
+// Send Bikes Post on database By ADMIN
+        app.post('/bikes', async (req, res) => {
+            const bike = req.body;
+            const result = await bikesCollection.insertOne(bike);
+            res.json(result)
+        })
+
+
+
 // Send orders info on database
         app.post('/orders', async (req, res) => {
             const order = req.body;
@@ -72,6 +83,56 @@ async function run() {
             res.json(result)
         })
 
+
+
+// DELETE api
+        app.delete("/bikes/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await bikesCollection.deleteOne(query);
+            res.send(result);
+        })
+        
+        
+        
+// =================================================================
+// Make admin
+        app.put("/users/admin", async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: "admin" } };
+            const result = await usersCollection.updateOne( filter, updateDoc );
+            res.json(result);
+        });
+// User data update
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        })
+// send users registration data on data base
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user)
+            res.json(result);
+        })
+// get 1 users data for login users
+app.get('/users/:email', async (req, res) => {
+    const email = req.params.email;
+    const query = { email: email };
+    const user = await usersCollection.findOne(query);
+    let isAdmin = false;
+    if (user?.role === 'admin') {
+        isAdmin = true;
+    }
+    res.json({Admin: isAdmin})
+})
+// =================================================================
+
+        
 
 
 // Get orders info from database 
