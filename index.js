@@ -2,6 +2,8 @@ const express = require('express')
 const cors = require('cors');
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
+
 
 const app = express()
 const port = process.env.PORT || 4000;
@@ -21,7 +23,8 @@ async function run() {
         await client.connect();
         const database = client.db("Bd_Motors");
         const bikesCollection = database.collection("bikes");
-        // const usersCollection = database.collection("users");
+        const ordersCollection = database.collection("orders");
+// ===================================================================
 
 
 // get bikes all data
@@ -32,12 +35,26 @@ async function run() {
         })
 
 
+
 // get single bike data
-        app.get('/bikes/bikeId', async (req, res) => {
-            const cursor = bikesCollection.findOne({});
-            const result = await cursor.toArray();
+        app.get('/bikes/:bikeId', async (req, res) => {
+            const id = req.params.bikeId;
+            const query = { _id: ObjectId(id) }
+            const hotel = await bikesCollection.findOne(query)
+            res.json(hotel);
+        })
+
+
+
+// Send orders info on database
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
             res.json(result)
         })
+
+
+
 
 
     } finally {
