@@ -39,6 +39,15 @@ async function run() {
 
 
 
+// get all order data
+        app.get('/orders', async(req, res) => {
+            const cursor = ordersCollection.find({});
+            const result = await cursor.toArray();
+            res.json(result)
+        })
+
+
+
 // get review data
         app.get('/reviews', async(req, res) => {
             const cursor = reviewCollection.find({});
