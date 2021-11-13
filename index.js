@@ -24,12 +24,22 @@ async function run() {
         const database = client.db("Bd_Motors");
         const bikesCollection = database.collection("bikes");
         const ordersCollection = database.collection("orders");
+        const reviewCollection = database.collection("review");
 // ===================================================================
 
 
 // get bikes all data
         app.get('/bikes', async(req, res) => {
             const cursor = bikesCollection.find({});
+            const result = await cursor.toArray();
+            res.json(result)
+        })
+
+
+
+// get review data
+        app.get('/reviews', async(req, res) => {
+            const cursor = reviewCollection.find({});
             const result = await cursor.toArray();
             res.json(result)
         })
@@ -53,6 +63,35 @@ async function run() {
             res.json(result)
         })
 
+
+
+// Send review info on database
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.json(result)
+        })
+
+
+
+// Get orders info from database 
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = ordersCollection.find(query);
+            const result = await cursor.toArray();
+            res.json(result)
+        })
+
+
+
+// DELETE api
+        app.delete("/orders/:orderId", async (req, res) => {
+            const id = req.params.orderId;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        })
 
 
 
