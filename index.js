@@ -113,6 +113,9 @@ async function run() {
             const result = await usersCollection.updateOne( filter, updateDoc );
             res.json(result);
         });
+
+
+
 // User data update
         app.put('/users', async (req, res) => {
             const user = req.body;
